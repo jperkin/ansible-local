@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# .bashrc - sourced by bash(1) for interactive non-login shells.
+#
+#   http://www.gnu.org/software/bash/manual/bashref.html#SEC65
+#
+
+
+#
+# General settings that are applicable for both interactive and
+# non-interactive shells.  These variables are populated by Ansible.
+#
+{{bash_path | join('\n')}}
+export PATH
+
+#
+# Settings that are only activated for interactive shells.
+#
+case "$-" in
+*i*)
+	# The one, true, backwards-delete-char character.
+	stty erase '^?'
+
+	# The one, true, editing mode.
+	set -o vi
+
+	# Configure preferred programs.
+	export CVS_RSH="ssh"
+	export EDITOR="vim"
+
+	#
+	# Configure less(1) as pager, enable colours, disable clear screen on
+	# exit, and disable history.
+	#
+	export LESS="-RX"
+	export LESSHISTFILE="-"
+	export PAGER=less
+
+	# Avoid macOS zsh warnings
+	export BASH_SILENCE_DEPRECATION_WARNING=1
+
+	# I don't like history being written to a file
+	unset HISTFILE
+
+	# Ensure CTRL-D logs us out
+	unset ignoreeof
+
+	# Set locale
+	export LC_CTYPE="en_GB.UTF-8"
+	export LC_COLLATE="C"
+	unset LANG
+
+	# Aliases and functions
+	source ${HOME}/.bash/aliases
+
+	# Set prompt and optional icon/titlebar sequences.
+	source ${HOME}/.bash/prompt
+
+	#
+	# If there is a private configuration file for this host then source it
+	# in.  This is usually created by ansible-private.
+	#
+	if [ -f ${HOME}/.bash/private ]; then
+		source ${HOME}/.bash/private
+	fi
+
+	# Load bash programmable completion
+	for dir in /etc /etc/bash /usr/pkg/share/bash-completion; do
+		if [ -f ${dir}/bash_completion ]; then
+			source ${dir}/bash_completion
+		fi
+	done
+	;;
+esac

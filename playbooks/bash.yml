@@ -1,0 +1,45 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Copy ~/.bashrc
+      template: src=bash/bashrc dest=~/.bashrc mode=0444
+
+    - name: Copy ~/.bash_profile
+      copy: src=bash/bash_profile dest=~/.bash_profile mode=0444
+
+    - name: Create ~/.bash
+      file:
+        path: ~/.bash
+        state: directory
+        mode: 0755
+
+    - name: Copy ~/.bash/aliases
+      copy: src=bash/aliases dest=~/.bash/aliases mode=0444
+
+    - name: Copy ~/.bash/prompt
+      copy: src=bash/prompt dest=~/.bash/prompt mode=0444
+
+    #
+    # These are files and directories used in the previous incarnation of
+    # my shell dotfiles.
+    #
+    - name: Remove old ~/etc/bash
+      file:
+        path: ~/etc/bash
+        state: absent
+
+    - name: Remove old ~/etc/sh
+      file:
+        path: ~/etc/sh
+        state: absent
+
+    - name: Remove old ~/.profile
+      file:
+        path: ~/.profile
+        state: absent
+
+    - name: Remove old ~/.versionrc
+      file:
+        path: ~/.versionrc
+        state: absent

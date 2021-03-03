@@ -29,6 +29,7 @@ show-targets:
 	@echo "Available targets:"
 	@echo ""
 	@echo "	make all	Push everything"
+	@echo "	make bash	Push bash configuration files"
 	@echo "	make config	Push misc configuration files"
 	@echo ""
 	@echo "To perform a dry-run, pass DIFF=-CD"
@@ -36,6 +37,14 @@ show-targets:
 
 all:
 	${ANSIBLE_PLAYBOOK} playbooks/all.yml
+
+bash:
+	@PLAYBOOKS="playbooks/bash.yml"; \
+	if [ -f private/playbooks/bash.yml ]; then \
+		PLAYBOOKS="$${PLAYBOOKS} private/playbooks/bash.yml"; \
+	fi; \
+	echo "Running \"${ANSIBLE_PLAYBOOK} $${PLAYBOOKS}\""; \
+	${ANSIBLE_PLAYBOOK} $${PLAYBOOKS}
 
 config:
 	${ANSIBLE_PLAYBOOK} playbooks/config.yml

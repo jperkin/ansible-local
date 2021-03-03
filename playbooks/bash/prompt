@@ -1,0 +1,172 @@
+#!/bin/bash
+#
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# ~/.bash/prompt - command line prompt for interactive bash shells.
+#
+
+
+#
+# This function sets up PS1, called by set_prompt(), and if given "colour"
+# as the first argument will enable ANSI colours.
+#
+set_ps1()
+{
+	local reset black darkred darkgreen brown darkblue magenta darkcyan
+	local grey darkgrey red green yellow blue pink cyan white reset
+
+	#
+	# Set up ANSI colours if on a terminal that supports them.  These are
+	# wrapped in "[...]" to prevent bash from including them as printable
+	# characters, thus computing the line length correctly.
+	#
+	# Use some indentation artistic license here to be clearer.
+	#
+	if [ "$1" = "colour" ]; then
+		    reset="\[\033[0m\]"
+		    black="${reset}\[\033[0;30m\]"
+		  darkred="${reset}\[\033[0;31m\]"
+		darkgreen="${reset}\[\033[0;32m\]"
+		    brown="${reset}\[\033[0;33m\]"
+		 darkblue="${reset}\[\033[0;34m\]"
+		  magenta="${reset}\[\033[0;35m\]"
+		 darkcyan="${reset}\[\033[0;36m\]"
+		     grey="${reset}\[\033[0;37m\]"
+		 darkgrey="${reset}\[\033[1;30m\]"
+		      red="${reset}\[\033[1;31m\]"
+		    green="${reset}\[\033[1;32m\]"
+		   yellow="${reset}\[\033[1;33m\]"
+		     blue="${reset}\[\033[1;34m\]"
+		     pink="${reset}\[\033[1;35m\]"
+		     cyan="${reset}\[\033[1;36m\]"
+		    white="${reset}\[\033[1;37m\]"
+	fi
+
+	#
+	# Start constructing the prompt.
+	#
+	local pstart="${cyan}-${darkcyan}-"
+	local pmid="${darkcyan}-"
+	local pend="${darkcyan}-${cyan}-\n${reset}"
+	local puser="${cyan}<${darkgreen}\u${pink}@${darkgreen}\H${cyan}>"
+	local pdir="${cyan}<${brown}\${PROMPTPWD}${cyan}>"
+	local pcmd="${darkcyan}-${cyan}> ${reset}"
+
+	#
+	# Use the same "-> " prefix for the prompt but change colour if root.
+	#
+	if [ ${UID} -eq 0 ]; then
+		pcmd="${darkcyan}-${red}> ${reset}"
+	fi
+
+	PS1="${pstart}${puser}${pmid}${pdir}${pend}${pcmd}"
+}
+
+#
+# Simple prompt command to update current directory name.
+#
+set_prompt_command()
+{
+	PROMPT_COMMAND="set_promptpwd"
+}
+
+#
+# Configure prompt command for displays which support icons and titlebars.
+#
+set_prompt_command_x11()
+{
+	#
+	# These escape sequences are used to set various X strings (but are
+	# also supported on e.g. macOS).
+	#
+	#   \033]0; = both title bar and icon name
+	#   \033]1; = icon name
+	#   \033]2; = title bar
+	#
+	# For the icon we just use the hostname as that's usually all they have
+	# room for, whereas for the titlebar we can add username and directory.
+	#
+	# TITLEPWD is set by set_titlepwd() prior to setting the prompt to
+	# configure how the current directory is displayed.
+	#
+	# Note that bash PS1 escape sequences (\u \h) are not supported here.
+	#
+	local icon="'\033]1;'${HOSTNAME}'\007'"
+	local title="'\033]2;'[${USER}@${HOSTNAME}] \(\${TITLEPWD}\)'\007'"
+
+	PROMPT_COMMAND="set_titlepwd; set_promptpwd; echo -ne ${icon}${title}"
+}
+
+#
+# Set PROMPTPWD to the current working directory used in PS1 prompts, with
+# support for truncation if it will overflow the current terminal width.
+#
+set_promptpwd()
+{
+	#
+	# Get the number of columns from the $COLUMNS variable, reduce by the
+	# number of characters making up the rest of the prompt, 3 for the
+	# "...", and an extra 2 to keep it away from the right hand edge a
+	# bit.
+	#
+	# Unfortunately, $COLUMNS isn't set before the first prompt appears,
+	# so we default to 80 in that case, which should suffice.
+	#
+	local userlen=$((${#USER}))
+	local maxwidth=$((${COLUMNS:-80}-${userlen}-${#HOSTNAME}-10-3-2))
+
+	if [ ${#PWD} -gt ${maxwidth} ]; then
+		PROMPTPWD="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
+	else
+		PROMPTPWD="${PWD}"
+	fi
+}
+
+#
+# Set up TITLEPWD to be displayed in title bars.  This is similar to PROMPTPWD,
+# but as we don't have anything similar to $COLUMNS to know our maximum width
+# we need to be more conservative.
+#
+set_titlepwd()
+{
+	local maxwidth=$((60-${#USER}-${#HOSTNAME}-6-3))
+
+	if [ ${#PWD} -gt ${maxwidth} ]; then
+		TITLEPWD="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
+	else
+		TITLEPWD="${PWD}"
+	fi
+}
+
+#
+# Set up prompt corresponding to our environment based on $TERM.
+#
+set_prompt()
+{
+	case "${TERM}" in
+	dtterm|xterm*|rxvt|screen*)
+		# Colour support, running under X.
+		set_ps1 colour
+		set_prompt_command_x11
+		;;
+	cons25|vt220|linux)
+		# Colour support, but no need for X setup.
+		set_ps1 colour
+		set_prompt_command
+		;;
+	*)
+		# Basic console, no colour.
+		set_ps1
+		set_prompt_command
+		;;
+	esac
+}
+
+#
+# Perform the setup when sourced.
+#
+set_prompt

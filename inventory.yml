@@ -3,3 +3,10 @@ all:
     localhost:
       ansible_connection: local
       ansible_python_interpreter: "{{ ansible_playbook_python }}"
+      bash_path: [
+        'PATH="${HOME}/scripts:${HOME}/bin"',
+        'PATH="${PATH}:${HOME}/.cargo/bin:${HOME}/node_modules/.bin"',
+        'PATH="${PATH}:/opt/pkg/sbin:/opt/pkg/bin"',
+        'PATH="${PATH}:/usr/sbin:/usr/bin:/sbin:/bin"',
+        'PATH="${PATH}:/usr/local/bin"'
+      ]

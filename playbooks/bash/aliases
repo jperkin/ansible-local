@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# ~/.bash/aliases - shell aliases
+#
+
+
+#
+# Search for GNU ls, I like colour.
+#
+use_gnu_ls()
+{
+	local gls="ls"
+	local gdircolors="dircolors"
+	local p
+
+	for p in g gnu; do
+		if command -v ${p}ls >/dev/null 2>&1; then
+			gls="${p}ls"
+		fi
+		if command -v ${p}dircolors >/dev/null 2>&1; then
+			gdircolors="${p}dircolors"
+		fi
+	done
+
+	#
+	# Verify that it is actually the GNU version, we can't solely rely on
+	# --version as the FreeBSD non-GNU version supports that.
+	#
+	if ${gls} --version 2>&1 | grep '^ls (.*utils)' >/dev/null; then
+		alias ls="${gls} --color=auto -F -b"
+	fi
+
+	if command -v ${gdircolors} >/dev/null 2>&1; then
+		eval `${gdircolors} -b ${HOME}/.dir_colours`
+	fi
+}
+use_gnu_ls
+
+#
+# General aliases
+#
+alias cdwrk='cd $(bmake show-var VARNAME=WRKSRC)'
+
+#
+# Handy functions
+#
+mps()
+{
+	for dir in "$@"; do
+		(cd ${dir}; bmake mps)
+	done
+}
