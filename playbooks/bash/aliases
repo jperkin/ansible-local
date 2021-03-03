@@ -37,7 +37,7 @@ use_gnu_ls()
 	fi
 
 	if command -v ${gdircolors} >/dev/null 2>&1; then
-		eval `${gdircolors} -b ${HOME}/.dir_colours`
+		eval $(${gdircolors} -b ${HOME}/.dir_colours)
 	fi
 }
 use_gnu_ls
