@@ -23,27 +23,3 @@
     - name: Copy ~/.bash/prompt
       copy: src=bash/prompt dest=~/.bash/prompt mode=0444
       tags: bash_prompt
-
-    #
-    # These are files and directories used in the previous incarnation of
-    # my shell dotfiles.
-    #
-    - name: Remove old ~/etc/bash
-      file:
-        path: ~/etc/bash
-        state: absent
-
-    - name: Remove old ~/etc/sh
-      file:
-        path: ~/etc/sh
-        state: absent
-
-    - name: Remove old ~/.profile
-      file:
-        path: ~/.profile
-        state: absent
-
-    - name: Remove old ~/.versionrc
-      file:
-        path: ~/.versionrc
-        state: absent
