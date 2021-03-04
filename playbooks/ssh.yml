@@ -1,0 +1,56 @@
+---
+#
+# An overview of how SSH is managed:
+#
+#	* All hosts ensure ~/.ssh is secured with 0700 permissions.
+#
+#	* All hosts except localhost are pushed an authorized_keys file,
+#	  chosen from the inventory depending on whether they support (in
+#	  order of preference) ED25519, ECDSA, or RSA.  No inbound SSH to
+#	  localhost is allowed, thus having no authorized_keys file helps
+#	  to enforce that.
+#
+#	* The private submodule contains ~/.ssh/config and ~/.ssh/known_hosts
+#	  files for localhost containing all hosts connected to.  There is no
+#	  significant reason to keep these private, but it does expose some
+#	  host information and there's no particular benefit in making that
+#	  public, so I don't.
+#
+#	* The ~/.ssh/config and ~/.ssh/known_hosts files on remote hosts that
+#	  were created by previous incarnations of my configuration management
+#	  are removed.  Any access from remote machines should be done using
+#	  ProxyJump feature from localhost.
+#
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Set ~/.ssh permissions
+      file: path=~/.ssh mode=0700 state=directory
+
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Ensure no localhost ~/.ssh/authorized_keys
+      file:
+        path: ~/.ssh/authorized_keys
+        state: absent
+      tags: authorized_keys
+
+- hosts: all:!localhost
+  gather_facts: no
+  tasks:
+    - name: Copy ~/.ssh/authorized_keys
+      copy: src={{ authorized_keys }} dest=~/.ssh/authorized_keys mode=0444
+      tags: authorized_keys
+
+    - name: Remove unused ~/.ssh/config
+      file:
+        path: ~/.ssh/config
+        state: absent
+      tags: ssh_config
+
+    - name: Remove unused ~/.ssh/known_hosts
+      file:
+        path: ~/.ssh/known_hosts
+        state: absent
+      tags: known_hosts

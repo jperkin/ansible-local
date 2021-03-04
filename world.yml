@@ -1,3 +1,4 @@
 ---
 - import_playbook: playbooks/config.yml
 - import_playbook: playbooks/bash.yml
+- import_playbook: playbooks/ssh.yml
