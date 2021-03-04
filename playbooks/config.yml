@@ -7,15 +7,28 @@
   tasks:
     - name: Copy ~/.cvsrc
       copy: src=config/cvsrc dest=~/.cvsrc mode=0444
+      tags: cvs
+
     - name: Copy ~/.dir_colours
       copy: src=config/dir_colours dest=~/.dir_colours mode=0444
+      tags: dircolors
+
     - name: Copy ~/.exrc
       copy: src=config/exrc dest=~/.exrc mode=0444
+      tags: ex
+
     - name: Copy ~/.hushlogin
       copy: src=config/hushlogin dest=~/.hushlogin mode=0444
+      tags: hushlogin
+
     - name: Copy ~/.inputrc
       copy: src=config/inputrc dest=~/.inputrc mode=0444
+      tags: inputrc
+
     - name: Copy ~/.screenrc
       copy: src=config/screenrc dest=~/.screenrc mode=0444
+      tags: screen
+
     - name: Copy ~/.tmux.conf
       copy: src=config/tmux.conf dest=~/.tmux.conf mode=0444
+      tags: tmux

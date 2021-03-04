@@ -4,9 +4,11 @@
   tasks:
     - name: Copy ~/.bashrc
       template: src=bash/bashrc dest=~/.bashrc mode=0444
+      tags: bashrc
 
     - name: Copy ~/.bash_profile
       copy: src=bash/bash_profile dest=~/.bash_profile mode=0444
+      tags: bash_profile
 
     - name: Create ~/.bash
       file:
@@ -16,9 +18,11 @@
 
     - name: Copy ~/.bash/aliases
       copy: src=bash/aliases dest=~/.bash/aliases mode=0444
+      tags: bash_aliases
 
     - name: Copy ~/.bash/prompt
       copy: src=bash/prompt dest=~/.bash/prompt mode=0444
+      tags: bash_prompt
 
     #
     # These are files and directories used in the previous incarnation of
