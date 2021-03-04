@@ -30,7 +30,7 @@ PLAYBOOKS=		bash config ssh
 # This target should be kept first to be the default.  Don't push anything
 # unless specifically requested to.
 #
-show-targets:
+help:
 	@echo "Available push targets:"
 	@echo ""
 	@echo "	make world	Push everything everywhere"
@@ -43,7 +43,7 @@ show-targets:
 	@echo "	make list-hosts		List available hosts"
 	@echo "	make list-tags		List available tags"
 	@echo "	make list-tasks		List available tasks"
-	@echo "	make show-targets	Show this help message"
+	@echo "	make help		Show this help message"
 	@echo ""
 	@echo "Supported variables:"
 	@echo ""
@@ -55,10 +55,12 @@ show-targets:
 	@echo "	# See what changes for all tasks would be made to localhost"
 	@echo "	make DIFF=-CD LIMIT='-l localhost' all"
 	@echo ""
-	@echo "	# Edit ~/.tmux.conf then push just that everywhere"
+	@echo "	# Edit ~/.tmux.conf then push that everywhere except localhost"
 	@echo "	vi playbooks/config/tmux.conf"
-	@echo "	make LIMIT='-t tmux' config"
+	@echo "	make LIMIT='-l all:!localhost -t tmux' config"
 	@echo ""
+	@echo "	# Run a temporary command across all hosts"
+	@echo "	ansible -i inventory.yml all -a 'rm -f .bash_history'"
 
 #
 # The world target is kept separate so that the list-* targets can just glob
