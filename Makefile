@@ -20,31 +20,67 @@ INVENTORIES=		-i inventory.yml
 INVENTORIES+=		-i private/inventory.yml
 #
 ANSIBLE_PLAYBOOK=	ansible-playbook ${DIFF} ${LIMIT} ${INVENTORIES}
+#
+# Playbooks should follow the same naming scheme where the target and name of
+# the playbook file are identical, so that the target below just works.
+#
+PLAYBOOKS=		bash config
 
 #
 # This target should be kept first to be the default.  Don't push anything
 # unless specifically requested to.
 #
 show-targets:
-	@echo "Available targets:"
+	@echo "Available push targets:"
 	@echo ""
-	@echo "	make all	Push everything"
+	@echo "	make world	Push everything everywhere"
 	@echo "	make bash	Push bash configuration files"
 	@echo "	make config	Push misc configuration files"
 	@echo ""
-	@echo "To perform a dry-run, pass DIFF=-CD"
-	@echo "To limit selected hosts, pass LIMIT='-l <hosts>'"
+	@echo "Available show targets:"
+	@echo ""
+	@echo "	make list-hosts		List available hosts"
+	@echo "	make list-tags		List available tags"
+	@echo "	make list-tasks		List available tasks"
+	@echo "	make show-targets	Show this help message"
+	@echo ""
+	@echo "Supported variables:"
+	@echo ""
+	@echo "	DIFF	For example DIFF=-CD for a dry-run with diffs"
+	@echo "	LIMIT	For example LIMIT='-l host' to push only to host"
+	@echo ""
+	@echo "Examples:"
+	@echo ""
+	@echo "	# See what changes for all tasks would be made to localhost"
+	@echo "	make DIFF=-CD LIMIT='-l localhost' all"
+	@echo ""
+	@echo "	# Edit ~/.tmux.conf then push just that everywhere"
+	@echo "	vi playbooks/config/tmux.conf"
+	@echo "	make LIMIT='-t tmux' config"
+	@echo ""
 
-all:
-	${ANSIBLE_PLAYBOOK} playbooks/all.yml
-
-bash:
-	@PLAYBOOKS="playbooks/bash.yml"; \
-	if [ -f private/playbooks/bash.yml ]; then \
-		PLAYBOOKS="$${PLAYBOOKS} private/playbooks/bash.yml"; \
+#
+# The world target is kept separate so that the list-* targets can just glob
+# inside the playbooks directories and not end up with duplicate items.
+#
+.PHONY: world
+world:
+	@playbooks="$@.yml"; \
+	if [ -f private/$@.yml ]; then \
+		playbooks="$${playbooks} private/$@.yml"; \
 	fi; \
-	echo "Running \"${ANSIBLE_PLAYBOOK} $${PLAYBOOKS}\""; \
-	${ANSIBLE_PLAYBOOK} $${PLAYBOOKS}
+	echo "Running \"${ANSIBLE_PLAYBOOK} $${playbooks}\""; \
+	${ANSIBLE_PLAYBOOK} $${playbooks}
 
-config:
-	${ANSIBLE_PLAYBOOK} playbooks/config.yml
+.PHONY: ${PLAYBOOKS}
+${PLAYBOOKS}:
+	@playbooks="playbooks/$@.yml"; \
+	if [ -f private/playbooks/$@.yml ]; then \
+		playbooks="$${playbooks} private/playbooks/$@.yml"; \
+	fi; \
+	echo "Running \"${ANSIBLE_PLAYBOOK} $${playbooks}\""; \
+	${ANSIBLE_PLAYBOOK} $${playbooks}
+
+.PHONY: list-hosts list-tags list-tasks
+list-hosts list-tags list-tasks:
+	${ANSIBLE_PLAYBOOK} --$@ playbooks/*.yml private/playbooks/*.yml
