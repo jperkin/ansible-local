@@ -11,3 +11,6 @@ all:
         'PATH="${PATH}:/usr/sbin:/usr/bin:/sbin:/bin"',
         'PATH="${PATH}:/usr/local/bin"'
       ]
+mutt:
+  hosts:
+    localhost:

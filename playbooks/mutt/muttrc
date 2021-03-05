@@ -1,0 +1,120 @@
+#
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# ~/.muttrc - configuration file for the mutt(1) mail user agent.
+#
+#	http://www.mutt.org/doc/manual/
+#
+
+
+#
+# Explicitly start with all builtin defaults, in case some admin has customised
+# the system configuration file with things we don't want.  The other option
+# would be to alias mutt="mutt -n".
+#
+reset all
+
+#
+# Override configuration defaults where necessary, trying to stick the defaults
+# as closely as possible.  All of the variable options are documented here:
+#
+#	http://www.mutt.org/doc/manual/#variables
+#
+# Generally I try to only change variables to either improve the UI look and
+# feel, appearance of outgoing emails, or set defaults for ask-* options to
+# avoid having to confirm certain operations each time.
+#
+set attribution="* On %(%Y-%m-%d) at %(%H:%M %Z), %n wrote:\n"
+set confirmappend=no
+set delete=yes
+set edit_headers=yes
+set editor="vim -X -c 'set tw=74 autoindent syntax=mail' '+/^$'"
+set fast_reply=yes
+set folder_format="%3C %t %2N %5n %-8.8u %-8.8g %8s %f"
+set forward_format="Fwd: %s"
+set header_cache="~/.mutt/cache/"
+set hostname="`uname -n`"
+set include=yes
+set mailcap_path="~/.mutt/mailcap"
+set message_cachedir="~/.mutt/cache/"
+set mime_forward=yes
+set pager_index_lines=10
+set pager_stop=yes
+set postpone=no
+set print_command="mp | lp"
+set quit=ask-no
+set reply_to=yes
+set sort=threads
+set tilde=yes
+set tmpdir="/tmp"
+set use_envelope_from=yes
+set wait_key=no
+
+#
+# Mutt binds Backspace to previous-line by default, but does not correctly also
+# bind the One True Backspace character, so fix that.
+#
+bind	pager	\177	previous-line
+
+#
+# Use urlview(1) to open URLs embedded within messages.  Useful when they are
+# surrounded by enclosing text.  Note the slightly awkward spacing used is to
+# work around the "feature" that whitespace is significant, so a space after
+# an <enter> command would be interpreted as a literal space command, i.e.
+# display-message.  Putting the whitespace at the end of variables and commands
+# is just eaten up normally, if a little ugly.
+#
+macro	index,pager	\cb	'<enter-command>set pipe_decode=yes \
+				 <enter><pipe-message>urlview \
+				 <enter><enter-command>set pipe_decode=no \
+				 <enter>' \
+				'Call urlview(1) to display an embedded URL'
+
+#
+# These options differ between whether mutt will be running on localhost or
+# over SSH.  If the latter then options will be chosen that avoid screen
+# redrawing or similar operations that will cause lag.
+#
+set arrow_cursor={{ mutt_arrow_cursor | default('no') }}
+set menu_scroll={{ mutt_menu_scroll | default('yes') }}
+
+#
+# These options differ depending on the host mutt is running on.  My primary
+# local host uses IMAP exclusively, and turning off any local mail options
+# avoids warnings and delays on startup, but that won't be suitable for remote
+# hosts with local mailboxes on which I may occasionally run mutt directly.
+#
+set folder={{ mutt_folder | default('') }}
+set imap_check_subscribed={{ mutt_imap_check_subscribed | default('yes') }}
+set mbox={{ mutt_mbox | default('') }}
+set spoolfile={{ mutt_spoolfile | default('') }}
+
+#
+# Header ordering and display.
+#
+ignore		*
+unignore	date: from: to: cc: reply-to: subject:
+unhdr_order	*
+hdr_order	date: from: to: cc: reply-to: subject:
+unmy_hdr	*
+
+#
+# Automatically view text/html using the mailcap handler.  Unfortunately these
+# days multipart/alternative is not handled well by most senders, and the
+# text/plain version will either be badly formatted, or completely different
+# to the text/html version.  Often the text/html version passed through w3m
+# will look much better, so just default to that now.
+#
+auto_view text/html
+alternative_order text/html text/plain text
+
+#
+# Include any additional files suitable for the host we are running on that are
+# too large to include inline here.
+#
+source ~/.mutt/colours
+{{ mutt_includes | default('') | join('\n') }}

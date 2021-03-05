@@ -1,0 +1,26 @@
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# ~/.mutt/mailcap - MIME attachment handlers for mutt(1)
+#
+#	http://www.faqs.org/rfcs/rfc1524.html
+#
+
+
+#
+# Pass most things directly to open(1) on macOS as it automatically handles
+# lots of file types.  The -W is required to keep the file open long enough
+# to launch the application asynchronously.
+#
+application/*;		open -W %s
+applica/*;		open -W %s
+image/*;		open -W %s
+
+#
+# View text formats inline using external helper tools.
+#
+text/html;		w3m -dump -T text/html %s; copiousoutput
+text/x-diff;		cat %s; copiousoutput

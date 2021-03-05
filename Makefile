@@ -24,7 +24,7 @@ ANSIBLE_PLAYBOOK=	ansible-playbook ${DIFF} ${LIMIT} ${INVENTORIES}
 # Playbooks should follow the same naming scheme where the target and name of
 # the playbook file are identical, so that the target below just works.
 #
-PLAYBOOKS=		bash config ssh
+PLAYBOOKS=		bash config mutt ssh
 
 #
 # This target should be kept first to be the default.  Don't push anything
@@ -36,6 +36,7 @@ help:
 	@echo "	make world	Push everything everywhere"
 	@echo "	make bash	Push bash configuration files"
 	@echo "	make config	Push misc configuration files"
+	@echo "	make mutt	Push mutt configuration files"
 	@echo "	make ssh	Push ssh configuration files"
 	@echo ""
 	@echo "Available show targets:"

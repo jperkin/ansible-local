@@ -1,0 +1,18 @@
+#
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# ~/.urlview - configuration file for urlview(1), for use with mutt.
+#
+#	urlview(1)
+#
+
+
+#
+# Simply defer to the macOS open(1) command which will open the URL using
+# the default browser.
+#
+COMMAND open %s

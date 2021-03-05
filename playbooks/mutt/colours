@@ -1,0 +1,103 @@
+#
+#      Jonathan Perkin <jonathan@perkin.org.uk> wrote this file.
+#
+# You can freely distribute/modify it (and are encouraged to do so),
+# and you are welcome to buy me a beer if we ever meet and you think
+# this stuff is worth it.  Improvements and cleanups always welcome.
+#
+# ~/.mutt/colours - Terminal colour scheme for mutt(1)
+#
+#	http://www.mutt.org/doc/manual/#color
+#
+
+#
+# The colour scheme is based on Solarized colours, aiming for a muted
+# display that only highlights important things, and that works with both
+# the Dark and Light colour schemes.
+#
+# As the Solarized colours don't map well to the ANSI names, the direct
+# colour codes are used in this file, and map to these colours:
+#
+#	color1		Red
+#	color2		Green
+#	color3		Yellow
+#	color4		Blue
+#	color5		Magenta
+#	color6		Cyan
+#	color9		Light Red
+#	color10		Dark Grey
+#	color11		Darker Grey
+#	color12		Lighter Grey
+#	color13		Violet
+#	color14		Light Grey
+#
+
+#
+# Ensure any default colours are removed first.
+#
+uncolor	body	*
+uncolor	header	*
+uncolor	index	*
+
+#
+# General UI elements.
+#
+color	error		color13		default
+color	indicator	default		color7
+color	markers		color13		default
+color	message		color13		default
+color	normal		brightdefault	default
+color	status		color10		color7
+color	tilde		color4		default
+color	tree		color13		default
+color	signature	color4		default
+
+#
+# Mail index
+#
+color	index	color3		default	~N	# New
+color	index	color2		default	~O	# Old
+color	index	color4		default	~T	# Tagged
+color	index	color12		default	~D	# Deleted
+
+#
+# Mail headers.  Make any that aren't explicitly set a light grey to fade
+# into the background a bit.
+#
+color	hdrdefault	color14	default
+#
+# These headers are shown by default.
+#
+color	header		color2	default	"^date: "
+color	header		color3	default	"^from: "
+color	header		color13	default	"^to: "
+color	header		color2	default	"^cc: "
+color	header		color4	default	"^reply-to: "
+color	header		color6	default	"^subject: "
+#
+# These are not.  Highlight any headers that I will generally want to be
+# searching for when showing all headers.
+#
+color	header		color9	default	"^received: "
+color	header		color10	default	"^in-reply-to: "
+color	header		color10	default	"^references: "
+color	header		color6	default	"^list-[^:]*: "
+color	header		color6	default	"^message-id: "
+color	header		color3	default	"^user-agent: "
+
+#
+# Add colour to URLs so I can pick them out for opening.
+#
+color	body		color13	default	"(ftp|http|https)://[^ \\]*"
+
+#
+# Quoting levels
+#
+color	quoted		color6	default
+color	quoted1		color3	default
+color	quoted2		color2	default
+color	quoted3		color13	default
+color	quoted4		color6	default
+color	quoted5		color3	default
+color	quoted6		color2	default
+color	quoted7		color13	default
