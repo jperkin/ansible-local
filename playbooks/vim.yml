@@ -1,0 +1,27 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Copy ~/.vimrc
+      copy: src=vim/vimrc dest=~/.vimrc mode=0444
+      tags: vimrc
+
+    - name: Create ~/.vim/after/syntax
+      file:
+        path: ~/.vim/after/syntax
+        state: directory
+        mode: 0755
+
+    - name: Create ~/.vim/colors (sic)
+      file:
+        path: ~/.vim/colors
+        state: directory
+        mode: 0755
+
+    - name: Copy ~/.vim/after/syntax/mail.vim
+      copy: src=vim/mail.vim dest=~/.vim/after/syntax/mail.vim mode=0444
+      tags: vim_syntax
+
+    - name: Copy ~/.vim/colors/solarized8.vim
+      copy: src=vim/solarized8.vim dest=~/.vim/colors/solarized8.vim mode=0444
+      tags: vim_colours
