@@ -21,7 +21,6 @@ set nohlsearch		" disable highlighted search
 set laststatus=2	" show status line
 set nomodeline		" do not parse modes in files, big security risk
 set ruler		" show the cursor position in status bar
-set showmatch		" show matching brackets
 set showmode		" show current mode in status bar
 set spelllang=en_gb	" load native dictionary for spell check
 
