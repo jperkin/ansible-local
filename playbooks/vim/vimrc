@@ -17,12 +17,19 @@
 "
 set nocompatible	" disable vi compatibility
 set nobackup		" don't keep backup files
-set nohlsearch		" disable highlighted search
 set laststatus=2	" show status line
 set nomodeline		" do not parse modes in files, big security risk
 set ruler		" show the cursor position in status bar
 set showmode		" show current mode in status bar
 set spelllang=en_gb	" load native dictionary for spell check
+
+"
+" Enable hlsearch but only with specific settings.  Double-Esc turns off the
+" matches, and there is a highlight override below to avoid the ugly defaults.
+"
+set hlsearch
+set incsearch
+nnoremap <silent> <Esc><Esc> <Esc>:nohlsearch<CR><Esc>
 
 "
 " Configure auto commands.
@@ -58,6 +65,9 @@ if has("syntax") && (&t_Co > 2)
 	let g:solarized_statusline="flat"
 	let g:solarized_italics=0
 	colorscheme solarized8
+
+	" Override ugly search highlight default
+	highlight Search	ctermbg=7	cterm=none
 
 	" Match	mutt colours
 	highlight mailSubject	ctermfg=6	cterm=none
