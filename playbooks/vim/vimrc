@@ -18,7 +18,7 @@
 set nocompatible	" disable vi compatibility
 set nobackup		" don't keep backup files
 set laststatus=2	" show status line
-set nomodeline		" do not parse modes in files, big security risk
+set nomodeline		" do not parse modes in files, can be a security risk
 set ruler		" show the cursor position in status bar
 set showmode		" show current mode in status bar
 set spelllang=en_gb	" load native dictionary for spell check
@@ -49,7 +49,8 @@ if has("autocmd")
 endif
 
 "
-" I cannot stand terminals which clear the screen after exiting.
+" I don't like applications which clear the screen after exiting.  Just makes
+" copy/pasting unnecessarily difficult.
 "
 set t_te=
 set t_ti=
