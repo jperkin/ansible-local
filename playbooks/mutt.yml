@@ -4,22 +4,28 @@
   tasks:
     - name: Copy ~/.muttrc
       template: src=mutt/muttrc dest=~/.muttrc mode=0444
+      tags: muttrc
 
     - name: Create ~/.mutt
       file: path=~/.mutt mode=0700 state=directory
 
     - name: Copy ~/.mutt/colours
       template: src=mutt/colours dest=~/.mutt/colours mode=0444
+      tags: mutt_colours
 
     - name: Copy ~/.mutt/mailcap
       copy: src=mutt/mailcap dest=~/.mutt/mailcap mode=0444
+      tags: mailcap
 
     - name: Copy ~/.mutt/signature_personal
       copy: src=mutt/signature_personal dest=~/.mutt/signature_personal mode=0444
+      tags: mutt_sigs
 
     - name: Copy ~/.mutt/signature_work
       copy: src=mutt/signature_work dest=~/.mutt/signature_work mode=0444
+      tags: mutt_sigs
 
     - name: Copy ~/.urlview
       copy: src=mutt/urlview dest=~/.urlview mode=0444
+      tags: urlview
 
