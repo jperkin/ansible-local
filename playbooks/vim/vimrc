@@ -42,9 +42,6 @@ if has("autocmd")
 	" Enable file type detection and customisation
 	filetype plugin indent on
 
-	" Filetype-based editing
-	autocmd FileType python	set et sta sts=4 sw=4
-
 	" Enable spell checker when editing mail
 	autocmd FileType mail set spell
 endif
