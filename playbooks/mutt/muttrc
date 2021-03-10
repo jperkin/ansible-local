@@ -32,7 +32,7 @@ set attribution="* On %(%Y-%m-%d) at %(%H:%M %Z), %n wrote:\n"
 set confirmappend=no
 set delete=yes
 set edit_headers=yes
-set editor="vim -X -c 'set tw=74 autoindent syntax=mail' '+/^$'"
+set editor="vim -X -c 'set syntax=mail' '+/^$' '+nohl'"
 set fast_reply=yes
 set folder_format="%3C %t %2N %5n %-8.8u %-8.8g %8s %f"
 set forward_format="Fwd: %s"
