@@ -22,6 +22,7 @@ set nomodeline		" do not parse modes in files, can be a security risk
 set ruler		" show the cursor position in status bar
 set showmode		" show current mode in status bar
 set spelllang=en_gb	" load native dictionary for spell check
+set viminfo=		" disable ~/.viminfo file
 
 "
 " Enable hlsearch but only with specific settings.  Double-Esc turns off the
