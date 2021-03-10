@@ -49,6 +49,7 @@ set print_command="mp | lp"
 set quit=ask-no
 set reply_to=yes
 set sort=threads
+set text_flowed=yes
 set tilde=yes
 set tmpdir="/tmp"
 set use_envelope_from=yes

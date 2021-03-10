@@ -42,8 +42,8 @@ if has("autocmd")
 	" Enable file type detection and customisation
 	filetype plugin indent on
 
-	" Enable spell checker when editing mail
-	autocmd FileType mail set spell
+	" Enable spell checker when editing mail and enable format=flowed.
+	autocmd FileType mail set formatoptions+=w spell
 endif
 
 "
