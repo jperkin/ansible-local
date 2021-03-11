@@ -16,8 +16,7 @@
 # General settings that are applicable for both interactive and
 # non-interactive shells.  These variables are populated by Ansible.
 #
-{{ bash_path | join('\n') }}
-export PATH
+{{ bash_paths | join('\n') }}
 
 #
 # Settings that are only activated for interactive shells.
@@ -70,10 +69,18 @@ case "$-" in
 		source ${HOME}/.bash/private
 	fi
 
+	# Ideally npm would create a .man directory like it does with .bin.
+	for dir in ${HOME}/node_modules/*/man; do
+		if [ -d ${dir} ]; then
+			MANPATH="${dir}:${MANPATH}"
+		fi
+	done
+	export MANPATH
+
 	# Load bash programmable completion
-	for dir in /etc /etc/bash /usr/pkg/share/bash-completion; do
-		if [ -f ${dir}/bash_completion ]; then
-			source ${dir}/bash_completion
+	for dir in /usr/share ${PKGS_PREFIX}/share; do
+		if [ -f ${dir}/bash-completion/bash_completion ]; then
+			source ${dir}/bash-completion/bash_completion
 		fi
 	done
 	;;
