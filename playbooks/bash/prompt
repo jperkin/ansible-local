@@ -11,10 +11,32 @@
 
 
 #
-# This function sets up PS1, called by set_prompt(), and if given "colour"
-# as the first argument will enable ANSI colours.
+# The way I configure my prompt is that PS1 is set to a static string, but
+# references two variables that are updated by PROMPT_COMMAND on each refresh.
 #
-set_ps1()
+# They are:
+#
+#	PROMPT_PWD	The current working directory
+#	PROMPT_BRANCH	The current git branch (if any)
+#
+# Configuration of PS1 is done at startup time, enabling colours if TERM is
+# set to something that is likely to support them.
+#
+# There is also support for setting icon and title strings if we're likely to
+# be running under a display environment.  As this needs to send the escape
+# sequences directly each time, the calculations are performed inline.
+#
+
+#
+# Pull in the upstream script for detecting the current git environment.
+#
+source ~/.bash/git-prompt
+
+#
+# This function sets up PS1, called by configure_prompt(), and if given
+# "colour" as the first argument will enable ANSI colours.
+#
+configure_ps1()
 {
 	local reset black darkred darkgreen brown darkblue magenta darkcyan
 	local grey darkgrey red green yellow blue pink cyan white reset
@@ -27,23 +49,23 @@ set_ps1()
 	# Use some indentation artistic license here to be clearer.
 	#
 	if [ "$1" = "colour" ]; then
-		    reset="\[\033[0m\]"
-		    black="${reset}\[\033[0;30m\]"
-		  darkred="${reset}\[\033[0;31m\]"
-		darkgreen="${reset}\[\033[0;32m\]"
-		    brown="${reset}\[\033[0;33m\]"
-		 darkblue="${reset}\[\033[0;34m\]"
-		  magenta="${reset}\[\033[0;35m\]"
-		 darkcyan="${reset}\[\033[0;36m\]"
-		     grey="${reset}\[\033[0;37m\]"
-		 darkgrey="${reset}\[\033[1;30m\]"
-		      red="${reset}\[\033[1;31m\]"
-		    green="${reset}\[\033[1;32m\]"
-		   yellow="${reset}\[\033[1;33m\]"
-		     blue="${reset}\[\033[1;34m\]"
-		     pink="${reset}\[\033[1;35m\]"
-		     cyan="${reset}\[\033[1;36m\]"
-		    white="${reset}\[\033[1;37m\]"
+		    reset="\[\e[0m\]"
+		    black="${reset}\[\e[0;30m\]"
+		  darkred="${reset}\[\e[0;31m\]"
+		darkgreen="${reset}\[\e[0;32m\]"
+		    brown="${reset}\[\e[0;33m\]"
+		 darkblue="${reset}\[\e[0;34m\]"
+		  magenta="${reset}\[\e[0;35m\]"
+		 darkcyan="${reset}\[\e[0;36m\]"
+		     grey="${reset}\[\e[0;37m\]"
+		 darkgrey="${reset}\[\e[1;30m\]"
+		      red="${reset}\[\e[1;31m\]"
+		    green="${reset}\[\e[1;32m\]"
+		   yellow="${reset}\[\e[1;33m\]"
+		     blue="${reset}\[\e[1;34m\]"
+		     pink="${reset}\[\e[1;35m\]"
+		     cyan="${reset}\[\e[1;36m\]"
+		    white="${reset}\[\e[1;37m\]"
 	fi
 
 	#
@@ -53,7 +75,8 @@ set_ps1()
 	local pmid="${darkcyan}-"
 	local pend="${darkcyan}-${cyan}-\n${reset}"
 	local puser="${cyan}<${darkgreen}\u${pink}@${darkgreen}\H${cyan}>"
-	local pdir="${cyan}<${brown}\${PROMPTPWD}${cyan}>"
+	local pdir="${cyan}<${brown}\${PROMPT_PWD}${cyan}>"
+	local pgit="\${PROMPT_BRANCH:+${cyan}(${pink}\${PROMPT_BRANCH}${cyan})${pmid}}"
 	local pcmd="${darkcyan}-${cyan}> ${reset}"
 
 	#
@@ -63,49 +86,13 @@ set_ps1()
 		pcmd="${darkcyan}-${red}> ${reset}"
 	fi
 
-	PS1="${pstart}${puser}${pmid}${pdir}${pend}${pcmd}"
+	PS1="${pstart}${puser}${pmid}${pgit}${pdir}${pend}${pcmd}"
 }
 
 #
-# Simple prompt command to update current directory name.
+# Set dynamic prompt variables on each refresh.
 #
-set_prompt_command()
-{
-	PROMPT_COMMAND="set_promptpwd"
-}
-
-#
-# Configure prompt command for displays which support icons and titlebars.
-#
-set_prompt_command_x11()
-{
-	#
-	# These escape sequences are used to set various X strings (but are
-	# also supported on e.g. macOS).
-	#
-	#   \033]0; = both title bar and icon name
-	#   \033]1; = icon name
-	#   \033]2; = title bar
-	#
-	# For the icon we just use the hostname as that's usually all they have
-	# room for, whereas for the titlebar we can add username and directory.
-	#
-	# TITLEPWD is set by set_titlepwd() prior to setting the prompt to
-	# configure how the current directory is displayed.
-	#
-	# Note that bash PS1 escape sequences (\u \h) are not supported here.
-	#
-	local icon="'\033]1;'${HOSTNAME}'\007'"
-	local title="'\033]2;'[${USER}@${HOSTNAME}] \(\${TITLEPWD}\)'\007'"
-
-	PROMPT_COMMAND="set_titlepwd; set_promptpwd; echo -ne ${icon}${title}"
-}
-
-#
-# Set PROMPTPWD to the current working directory used in PS1 prompts, with
-# support for truncation if it will overflow the current terminal width.
-#
-set_promptpwd()
+update_prompt_vars()
 {
 	#
 	# Get the number of columns from the $COLUMNS variable, reduce by the
@@ -120,53 +107,82 @@ set_promptpwd()
 	local maxwidth=$((${COLUMNS:-80}-${userlen}-${#HOSTNAME}-10-3-2))
 
 	if [ ${#PWD} -gt ${maxwidth} ]; then
-		PROMPTPWD="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
+		PROMPT_PWD="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
 	else
-		PROMPTPWD="${PWD}"
+		PROMPT_PWD="${PWD}"
 	fi
+
+	#
+	# Use the upstream git-branch functions to determine the current git
+	# branch, or none if not inside a git repository.
+	#
+	PROMPT_BRANCH=$(__git_ps1 "%s")
 }
 
 #
-# Set up TITLEPWD to be displayed in title bars.  This is similar to PROMPTPWD,
-# but as we don't have anything similar to $COLUMNS to know our maximum width
-# we need to be more conservative.
+# Update the icon name and title bar on each refresh.  As we need to print the
+# escape sequences each time there's no need to do this with a dynamic variable
+# like with PROMPT_PWD.
 #
-set_titlepwd()
+update_icon_title()
 {
+	#
+	# As there is no accurate way to know what width we can use for the
+	# current directory like we can with $COLUMNS, we err on the side of
+	# caution and use a relatively conservative value.
+	#
 	local maxwidth=$((60-${#USER}-${#HOSTNAME}-6-3))
+	local titlepwd
 
 	if [ ${#PWD} -gt ${maxwidth} ]; then
-		TITLEPWD="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
+		titlepwd="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
 	else
-		TITLEPWD="${PWD}"
+		titlepwd="${PWD}"
 	fi
+
+	#
+	# These escape sequences are used to set various X strings (but are
+	# also supported on e.g. macOS).
+	#
+	#   \e]0; = both title bar and icon name
+	#   \e]1; = icon name
+	#   \e]2; = title bar
+	#
+	# For the icon we just use the hostname as that's usually all they have
+	# room for, whereas for the titlebar we can add the username and
+	# current directory.
+	#
+	local icon="\e]1;${HOSTNAME}\007"
+	local title="\e]2;[${USER}@${HOSTNAME}] \(${titlepwd}\)\007"
+
+	echo -ne "${icon}${title}"
 }
 
 #
-# Set up prompt corresponding to our environment based on $TERM.
+# Configure initial PS1 and recurring PROMPT_COMMAND based on TERM.
 #
-set_prompt()
+configure_prompt()
 {
 	case "${TERM}" in
+	# Colour support, running under a display environment.
 	dtterm|xterm*|rxvt|screen*)
-		# Colour support, running under X.
-		set_ps1 colour
-		set_prompt_command_x11
+		configure_ps1 colour
+		PROMPT_COMMAND="update_prompt_vars; update_icon_title"
 		;;
+	# Colour support, but no display environment.
 	cons25|vt220|linux)
-		# Colour support, but no need for X setup.
-		set_ps1 colour
-		set_prompt_command
+		configure_ps1 colour
+		PROMPT_COMMAND="update_prompt_vars"
 		;;
+	# Basic console, no colour.
 	*)
-		# Basic console, no colour.
-		set_ps1
-		set_prompt_command
+		configure_ps1
+		PROMPT_COMMAND="update_prompt_vars"
 		;;
 	esac
 }
 
 #
-# Perform the setup when sourced.
+# Perform the setup automatically when sourced.
 #
-set_prompt
+configure_prompt
