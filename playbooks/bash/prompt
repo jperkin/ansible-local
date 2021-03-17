@@ -95,16 +95,29 @@ configure_ps1()
 update_prompt_vars()
 {
 	#
-	# Get the number of columns from the $COLUMNS variable, reduce by the
-	# number of characters making up the rest of the prompt, 3 for the
-	# "...", and an extra 2 to keep it away from the right hand edge a
-	# bit.
+	# Calculate length of user@hostname portion.
 	#
-	# Unfortunately, $COLUMNS isn't set before the first prompt appears,
-	# so we default to 80 in that case, which should suffice.
+	local userlen=$((${#USER} + 1 + ${#HOSTNAME}))
+
 	#
-	local userlen=$((${#USER}))
-	local maxwidth=$((${COLUMNS:-80}-${userlen}-${#HOSTNAME}-10-3-2))
+	# Calculate length of git branch part of prompt, if any.  The magic
+	# number 3 is for "(<branch>)-" as it is omitted if not in a git repo.
+	#
+	local gitlen=0
+	local branch=$(__git_ps1 "%s")
+	if [ ${#branch} -ne 0 ]; then
+		gitlen=$((${#branch} + 3))
+	fi
+
+	#
+	# The maximum width is $COLUMNS, minus user@hostname, minus git prompt
+	# (if any), minus 9 which is the remaining "-<>" characters, minus 3
+	# for the "...", minus a final 1 to keep it away from the right side.
+	#
+	# $COLUMNS isn't set before the first prompt appears so we default to
+	# 80 which should suffice.
+	#
+	local maxwidth=$((${COLUMNS:-80} - ${userlen} - ${gitlen} - 9 - 3 - 1))
 
 	if [ ${#PWD} -gt ${maxwidth} ]; then
 		PROMPT_PWD="...${PWD:$((${#PWD}-${maxwidth})):${maxwidth}}"
@@ -116,7 +129,7 @@ update_prompt_vars()
 	# Use the upstream git-branch functions to determine the current git
 	# branch, or none if not inside a git repository.
 	#
-	PROMPT_BRANCH=$(__git_ps1 "%s")
+	PROMPT_BRANCH="${branch}"
 }
 
 #
