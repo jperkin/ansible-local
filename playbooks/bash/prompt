@@ -152,8 +152,11 @@ update_icon_title()
 	# room for, whereas for the titlebar we can add the username and
 	# current directory.
 	#
-	local icon="\e]1;${HOSTNAME}\007"
-	local title="\e]2;[${USER}@${HOSTNAME}] (${titlepwd})\007"
+	# Note that \033 is used instead of \e as the bash-3.2.57(1) shipped on
+	# macOS doesn't like the latter for some reason.
+	#
+	local icon="\033]1;${HOSTNAME}\007"
+	local title="\033]2;[${USER}@${HOSTNAME}] (${titlepwd})\007"
 
 	echo -ne "${icon}${title}"
 }
