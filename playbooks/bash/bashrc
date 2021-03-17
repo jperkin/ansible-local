@@ -77,11 +77,15 @@ case "$-" in
 	done
 	export MANPATH
 
-	# Load bash programmable completion
-	for dir in /usr/share ${PKGS_PREFIX}/share; do
-		if [ -f ${dir}/bash-completion/bash_completion ]; then
-			source ${dir}/bash-completion/bash_completion
-		fi
-	done
+	#
+	# Load bash programmable completion if running a supported version.
+	#
+	if [ ${BASH_VERSINFO[0]} -ge 4 ]; then
+		for dir in /usr/share ${PKGS_PREFIX}/share; do
+			if [ -f ${dir}/bash-completion/bash_completion ]; then
+				source ${dir}/bash-completion/bash_completion
+			fi
+		done
+	fi
 	;;
 esac
