@@ -81,9 +81,11 @@ case "$-" in
 	# Load bash programmable completion if running a supported version.
 	#
 	if [ ${BASH_VERSINFO[0]} -ge 4 ]; then
-		for dir in /usr/share ${PKGS_PREFIX}/share; do
-			if [ -f ${dir}/bash-completion/bash_completion ]; then
-				source ${dir}/bash-completion/bash_completion
+		for dir in /etc/bash /usr/share/bash-completion \
+			   ${PKGS_PREFIX}/share/bash-completion; do
+			if [ -f ${dir}/bash_completion ]; then
+				source ${dir}/bash_completion
+				break
 			fi
 		done
 	fi
