@@ -58,9 +58,11 @@ set wait_key=no
 
 #
 # Mutt binds Backspace to previous-line by default, but does not correctly also
-# bind the One True Backspace character, so fix that.
+# bind the One True Backspace character.  Also as I only ever use IMAP or local
+# spool files it's useful to rebind POP "G" to poll for new IMAP instead.
 #
 bind	pager	\177	previous-line
+bind	index	G	imap-fetch-mail
 
 #
 # Use urlview(1) to open URLs embedded within messages.  Useful when they are
