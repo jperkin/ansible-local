@@ -107,14 +107,17 @@ hdr_order	date: from: to: cc: reply-to: subject:
 unmy_hdr	*
 
 #
-# Automatically view text/html using the mailcap handler.  Unfortunately these
-# days multipart/alternative is not handled well by most senders, and the
-# text/plain version will either be badly formatted, or completely different
-# to the text/html version.  Often the text/html version passed through w3m
-# will look much better, so just default to that now.
+# Automatically view text/html using the mailcap handler, but prefer text/plain
+# as even though sometimes these days it can render worse than text/html (or
+# contain completely different contents!) you lose things like clickable URLs
+# in e.g. GitHub mails.
 #
-auto_view text/html
-alternative_order text/html text/plain text
+# It may be that this should be set on a per-mailbox basis.
+#
+unauto_view		*
+auto_view		text/html
+unalternative_order	*
+alternative_order	text/plain text
 
 #
 # Include any additional files suitable for the host we are running on that are
