@@ -82,3 +82,10 @@ if has("syntax") && (&t_Co > 2)
 	highlight! link	mailQuoted7 mailQuoted3
 	highlight! link	mailQuoted8 mailQuoted4
 endif
+
+"
+" Configure plugins
+"
+call plug#begin('~/.vim/plugged')
+Plug 'wellle/context.vim'
+call plug#end()

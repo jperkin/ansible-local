@@ -12,6 +12,12 @@
         state: directory
         mode: 0755
 
+    - name: Create ~/.vim/autoload
+      file:
+        path: ~/.vim/autoload
+        state: directory
+        mode: 0755
+
     - name: Create ~/.vim/colors (sic)
       file:
         path: ~/.vim/colors
@@ -21,6 +27,10 @@
     - name: Copy ~/.vim/after/syntax/mail.vim
       copy: src=vim/mail.vim dest=~/.vim/after/syntax/mail.vim mode=0444
       tags: vim_syntax
+
+    - name: Copy ~/.vim/autoload/plug.vim
+      copy: src=vim/plug.vim dest=~/.vim/autoload/plug.vim mode=0444
+      tags: vim_plug
 
     - name: Copy ~/.vim/colors/solarized8.vim
       copy: src=vim/solarized8.vim dest=~/.vim/colors/solarized8.vim mode=0444
