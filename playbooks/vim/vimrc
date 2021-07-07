@@ -84,8 +84,10 @@ if has("syntax") && (&t_Co > 2)
 endif
 
 "
-" Configure plugins
+" Configure vim-plug plugins
 "
 call plug#begin('~/.vim/plugged')
-Plug 'wellle/context.vim'
+  Plug 'cespare/vim-toml'
+  Plug 'preservim/nerdtree'
+  Plug 'wellle/context.vim'
 call plug#end()
