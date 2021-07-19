@@ -50,6 +50,7 @@ set quit=ask-no
 set reply_to=yes
 set sleep_time=0
 set sort=threads
+set sort_browser_mailboxes=alpha
 set text_flowed=yes
 set tilde=yes
 set tmpdir="/tmp"
