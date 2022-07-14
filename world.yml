@@ -3,3 +3,4 @@
 - import_playbook: playbooks/bash.yml
 - import_playbook: playbooks/mutt.yml
 - import_playbook: playbooks/ssh.yml
+- import_playbook: playbooks/vim.yml
