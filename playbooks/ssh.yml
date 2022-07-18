@@ -28,16 +28,16 @@
     - name: Set ~/.ssh permissions
       file: path=~/.ssh mode=0700 state=directory
 
-- hosts: localhost
+- hosts: roobarb
   gather_facts: false
   tasks:
-    - name: Ensure no localhost ~/.ssh/authorized_keys
+    - name: Ensure no roobarb ~/.ssh/authorized_keys
       file:
         path: ~/.ssh/authorized_keys
         state: absent
       tags: authorized_keys
 
-- hosts: all:!localhost
+- hosts: all:!roobarb
   gather_facts: false
   tasks:
     - name: Copy ~/.ssh/authorized_keys
