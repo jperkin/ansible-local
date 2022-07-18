@@ -1,6 +1,6 @@
 ---
 - hosts: mutt
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Copy ~/.muttrc
       template: src=mutt/muttrc dest=~/.muttrc mode=0444
@@ -28,4 +28,3 @@
     - name: Copy ~/.urlview
       copy: src=mutt/urlview dest=~/.urlview mode=0444
       tags: urlview
-

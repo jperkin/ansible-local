@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Copy ~/.bashrc
       template: src=bash/bashrc dest=~/.bashrc mode=0444

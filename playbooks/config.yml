@@ -3,7 +3,7 @@
 #
 ---
 - hosts: all
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Copy ~/.cvsrc
       copy: src=config/cvsrc dest=~/.cvsrc mode=0444
