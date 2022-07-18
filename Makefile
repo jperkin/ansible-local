@@ -125,3 +125,8 @@ ${TAGS}:
 .PHONY: list-hosts list-tags list-tasks
 list-hosts list-tags list-tasks:
 	${ANSIBLE_PLAYBOOK} --$@ playbooks/*.yml private/playbooks/*.yml
+
+#
+# Optionally include private Makefile which can add to variables listed above.
+#
+-include private/Makefile
