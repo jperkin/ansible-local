@@ -6,7 +6,7 @@
 # arguments:
 #
 #	DIFF		For example DIFF=-CD to perform a dry-run to show diffs
-#	LIMIT		For example LIMIT="-l localhost" to limit selected hosts
+#	LIMIT		For example LIMIT="-l roobarb" to limit selected hosts
 #
 # Each playbook should have a target, and be added to the default rule which is
 # to show the list of targets.
@@ -20,11 +20,27 @@ INVENTORIES=		-i inventory.yml
 INVENTORIES+=		-i private/inventory.yml
 #
 ANSIBLE_PLAYBOOK=	ansible-playbook ${DIFF} ${LIMIT} ${INVENTORIES}
+
 #
 # Playbooks should follow the same naming scheme where the target and name of
 # the playbook file are identical, so that the target below just works.
 #
 PLAYBOOKS=		bash config mutt ssh vim
+
+#
+# Push by host
+#
+HOSTS=			roobarb
+
+#
+# Per-playbook tags, these allow creating simple shortcut targets.
+#
+TAGS_bash=	bash_aliases bash_private bash_profile bash_prompt bashrc
+TAGS_config=	cvs dircolors ex hushlogin inputrc screen tmux
+TAGS_mutt=	mailcap mutt_colours mutt_hooks mutt_sigs muttrc urlview
+TAGS_ssh=	authorized_keys known_hosts ssh_config
+TAGS_vim=	vim_colours vim_syntax vimrc
+TAGS=		${TAGS_bash} ${TAGS_config} ${TAGS_mutt} ${TAGS_ssh} ${TAGS_vim}
 
 #
 # This target should be kept first to be the default.  Don't push anything
@@ -54,12 +70,12 @@ help:
 	@echo ""
 	@echo "Examples:"
 	@echo ""
-	@echo "	# See what changes for all tasks would be made to localhost"
-	@echo "	make DIFF=-CD LIMIT='-l localhost' all"
+	@echo "	# See what changes for all tasks would be made to roobarb"
+	@echo "	make DIFF=-CD LIMIT='-l roobarb' all"
 	@echo ""
-	@echo "	# Edit ~/.tmux.conf then push that everywhere except localhost"
+	@echo "	# Edit ~/.tmux.conf then push that everywhere except roobarb"
 	@echo "	vi playbooks/config/tmux.conf"
-	@echo "	make LIMIT='-l all:!localhost -t tmux' config"
+	@echo "	make LIMIT='-l all:!roobarb -t tmux' config"
 	@echo ""
 	@echo "	# Run a temporary command across all hosts"
 	@echo "	ansible -i inventory.yml all -a 'rm -f .bash_history'"
@@ -77,6 +93,9 @@ world:
 	echo "Running \"${ANSIBLE_PLAYBOOK} $${playbooks}\""; \
 	${ANSIBLE_PLAYBOOK} $${playbooks}
 
+#
+# Run all tasks within a specific playbook.
+#
 .PHONY: ${PLAYBOOKS}
 ${PLAYBOOKS}:
 	@playbooks="playbooks/$@.yml"; \
@@ -85,6 +104,23 @@ ${PLAYBOOKS}:
 	fi; \
 	echo "Running \"${ANSIBLE_PLAYBOOK} $${playbooks}\""; \
 	${ANSIBLE_PLAYBOOK} $${playbooks}
+
+.PHONY: ${HOSTS}
+${HOSTS}:
+	${ANSIBLE_PLAYBOOK} -l $@ playbooks/*.yml private/playbooks/*.yml
+
+#
+# Run specific tags within its associated playbook.
+#
+.PHONY: ${TAGS}
+${TAGS_bash}: playbooks/bash.yml private/playbooks/bash.yml
+${TAGS_config}: playbooks/config.yml private/playbooks/config.yml
+${TAGS_mutt}: playbooks/mutt.yml private/playbooks/mutt.yml
+${TAGS_ssh}: playbooks/ssh.yml private/playbooks/ssh.yml
+${TAGS_vim}: playbooks/vim.yml private/playbooks/vim.yml
+
+${TAGS}:
+	${ANSIBLE_PLAYBOOK} -t $@ $?
 
 .PHONY: list-hosts list-tags list-tasks
 list-hosts list-tags list-tasks:
